@@ -28,13 +28,11 @@ class VISUAL:
         self.globals_name = 'globals.ini'
 
 
-        self.date = '20240608'
-        self.dir = f"data/tilt_test/{self.date}/"
-        self.dir = f"data/IVP159/{self.date}/"
+        self.date = '20240712'
 
-        self.date = '20240624_varyingk'
+        self.date = '20240712'
         # self.date = '20240614_long'
-        self.dir = f"data/regular_wall_sim/{self.date}/"
+        self.dir = f"data/build-a-beat/{self.date}/"
 
         # self.date = '20240620'
         # self.dir = f"data/IVP159_flowfield/{self.date}/"
@@ -677,7 +675,7 @@ class VISUAL:
                     #     fil_angles_str = fil_angles_f.readline()
                     frame += 1
                 
-            plt.savefig(f'fig/fil_phase_plane_index{self.index}_{self.date}.pdf', bbox_inches = 'tight', format='pdf')
+            plt.savefig(f'fig/fil_phase_plane_index{self.index}_{self.date}.png', bbox_inches = 'tight', format='png')
             plt.show()
 
 ## Ciliates

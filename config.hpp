@@ -102,7 +102,7 @@ extern std::string CUFCM_CONFIG_FILE_NAME;
 
 #elif CILIA_TYPE==3
 
-  #define SHAPE_SEQUENCE 1
+  #define SHAPE_SEQUENCE 0
   // Valid options:
   // 0 = 'Build-a-beat'. This choice has some parameters to set (see below).
   // 1 = The 'Fulford and Blake' beat pattern for mammalian airway cilia. See the data-fitting description in  "A model for the micro-structure in ciliated organisms", Blake (1972).
@@ -132,7 +132,7 @@ extern std::string CUFCM_CONFIG_FILE_NAME;
   // It will also generate reference s-values for shape sequences which don't result in inextensible filaments.
   // NOTE: This will overwrite any existing reference files unless their names have been changed.
 
-  #define CILIA_IC_TYPE 5
+  #define CILIA_IC_TYPE 1
   // Valid options:
   // if using 3, we should be able to derive all other cases.
   // 0 = All cilia start in-phase with phase 0.
@@ -155,7 +155,7 @@ extern std::string CUFCM_CONFIG_FILE_NAME;
 
 #endif
 
-#define BODY_OR_SURFACE_TYPE 2
+#define BODY_OR_SURFACE_TYPE 5
 // Valid options:
 // 0 = An infinite plane wall at z = 0. This choice has some sub-types (see below).
 // 1 = Deformed planes with 2 principal curvatures (partially implemented)
@@ -183,7 +183,7 @@ extern std::string CUFCM_CONFIG_FILE_NAME;
 
 #elif BODY_OR_SURFACE_TYPE==2 or BODY_OR_SURFACE_TYPE==4 or BODY_OR_SURFACE_TYPE==5
 
-  #define SEEDING_TYPE 7
+  #define SEEDING_TYPE 3
   // Valid options:
   // 0 = Filaments are evenly distributed over the surface.
   // 1 = Filaments are seeded in an equatorial band.
@@ -223,7 +223,7 @@ extern std::string CUFCM_CONFIG_FILE_NAME;
 
 #endif
 
-#define MOBILITY_TYPE 4
+#define MOBILITY_TYPE 1
 // Valid options:
 // 0 = Basic Stokes drag. No hydrodynamic interactions between particles.
 // 1 = Rotne-Prager-Yamakawa (RPY) mobility matrices (with the corrections due to Swan and Brady if an infinite plane wall is selected).
@@ -324,7 +324,7 @@ extern int TOTAL_TIME_STEPS;
 #if SOLVER_TYPE==1
 
   #define MAX_LINEAR_SYSTEM_ITER 350 // Maximum number of iterations used to solve the linear system in each mobility solve.
-  #define LINEAR_SYSTEM_TOL 1e-7 // Relative tolerance in the linear system solves.
+  #define LINEAR_SYSTEM_TOL 1e-4 // Relative tolerance in the linear system solves.
 
   // GMRES preconditioner type.
   // Uses left preconditioning if set to false; if you don't want a preconditioner,
@@ -439,7 +439,7 @@ extern int TOTAL_TIME_STEPS;
     #define PRESCRIBED_BODY_VELOCITIES true
     #define DYNAMIC_PHASE_EVOLUTION false
     #define DYNAMIC_SHAPE_ROTATION false
-    #define TOTAL_TIME_STEPS STEPS_PER_PERIOD
+    // #define TOTAL_TIME_STEPS STEPS_PER_PERIOD
     #define INITIAL_CONDITIONS_TYPE 0
 
   #endif

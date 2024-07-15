@@ -86,7 +86,9 @@ int main(int argc, char** argv){
   END_FORCE_MAGNITUDE = (DIMENSIONLESS_FORCE*KB/(DL*DL*NSEG*NSEG));
   DL = SEG_SEP*RSEG;
   DT = PERIOD/STEPS_PER_PERIOD;
-  TOTAL_TIME_STEPS = SIM_LENGTH*STEPS_PER_PERIOD+1;
+  #if !WRITE_GENERALISED_FORCES
+    TOTAL_TIME_STEPS = SIM_LENGTH*STEPS_PER_PERIOD+1;
+  #endif
 
   // Filenames 
   SIMULATION_NAME = SIMULATION_DIR + SIMULATION_FILE;
@@ -268,6 +270,8 @@ int main(int argc, char** argv){
   #if PRESCRIBED_CILIA
 
     #if WRITE_GENERALISED_FORCES
+
+    // HERE THE FIRST NUMBER OF THE FORCES IS IMPORTANT! IT IS THE TOTAL TIME STEPS< THEN NSEG, THEN THE FORCES
 
       std::ofstream phase_generalised_force_file(reference_phase_generalised_force_file_name());
 

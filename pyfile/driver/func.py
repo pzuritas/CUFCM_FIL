@@ -7,13 +7,13 @@ class DRIVER:
     def __init__(self):
         self.globals_name = 'input/globals.ini'
         self.afix = ''
-        self.category = 'regular_wall_sim/'
+        self.category = 'build-a-beat/'
         # self.category = 'IVP159_flowfield/'
         
         # self.exe_name = 'cilia_1e-4_30_tilt_90deg'
-        self.exe_name = 'cilia_1e-4_30_plane'
+        self.exe_name = 'cilia_1e-4_test'
         
-        self.date = '20240624_varyingk'
+        self.date = '20240712'
 
         self.dir = f"data/{self.category}{self.date}{self.afix}/"
 
@@ -44,7 +44,7 @@ class DRIVER:
                      "reverse_fil_direction_ratio": []}
 
         # self.sweep_shape = (1, 12, 4, 1)
-        self.sweep_shape = (10, 1, 1, 1)
+        self.sweep_shape = (1, 1, 1, 1)
 
         self.num_sim = 0
 
@@ -90,7 +90,7 @@ class DRIVER:
                         force_mag = 1
 
                         # # planar triangle
-                        nfil = int(256*(i+1))
+                        nfil = int(64*(i+1))
                         nblob = int(25600*(i+1))
                         ar = round(1, 2)
                         period = 1
@@ -105,7 +105,7 @@ class DRIVER:
                         blob_x_dim=160*(i+1)
                         hex_num=2
                         reverse_fil_direction_ratio=0.0
-                        sim_length = 200
+                        sim_length = 100.0
 
                         # nfil = int(1*(i+1))
                         # nblob = int(4096*(i+1))
