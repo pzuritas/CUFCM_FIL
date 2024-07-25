@@ -6,6 +6,49 @@
 #include "filament.hpp"
 #include "../../config.hpp"
 
+double transition_function(const double x) {
+    if (x <= -0.5) {
+        return -1.0;
+    } else if (-0.5 < x && x < 0.5) {
+        return 2.0 * std::exp(-2.0 / (2.0 * x + 1.0)) / 
+              (std::exp(-2.0 / (2.0 * x + 1.0)) + std::exp(2.0 / (2.0 * x - 1.0))) - 1.0;
+    } else {
+        return 1.0;
+    }
+}
+
+double sech(const double x) {
+    return 2.0 / (std::exp(x) + std::exp(-x));
+}
+
+double transition_function_derivative(const double x) {
+if (x <= -0.5 || x >= 0.5) {
+        return 0.0;
+    } else {
+        double numerator = 4.0 * (4.0 * x * x + 1.0) * std::pow(sech(
+            4.0 * x / (4.0 * x * x - 1.0)
+        ), 2);
+        double denominator = std::pow((1.0 - 4.0 * x * x), 2);
+        return numerator / denominator;
+    }
+}
+
+double effective_angle(const double phase) {
+    return THETA_0*(1.0 - phase/(PI*EFFECTIVE_STROKE_LENGTH));
+}
+
+double recovery_angle(const double s, const double phase) {
+    double rotation = 1.0/(PI*(1.0 - EFFECTIVE_STROKE_LENGTH))*phase - 1.0;
+    return THETA_0*((1.0 - TRAVELLING_WAVE_IMPORTANCE)*rotation
+        - TRAVELLING_WAVE_IMPORTANCE*transition_function(
+                (
+            s - (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)*phase / (
+                2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
+            )
+        )/TRAVELLING_WAVE_WINDOW + 0.5
+    ));
+}
+
 matrix body_frame_moment_lie_derivative(const quaternion& q1, const quaternion& q2, const bool upper){
 
   matrix A(4,3);
@@ -988,40 +1031,14 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
 
     Real filament::build_a_beat_tangent_angle(const Real s) const {
 
-      const Real wR = RECOVERY_STROKE_WINDOW_LENGTH*2.0*PI;
-      const Real wE = EFFECTIVE_STROKE_LENGTH*2.0*PI;
-      const Real phi_transition = wE + s*(2.0*PI - wE - wR); // Assumes 0 <= s <= 1
-
-      //const Real shifted_phase = phase - 2.0*PI*std::floor(0.5*phase/PI);
-      Real shifted_phase = phase - s*2.0*PI*ZERO_VELOCITY_AVOIDANCE_LENGTH;
-      shifted_phase -= 2.0*PI*std::floor(0.5*shifted_phase/PI);
-
-      Real delta;
-
-      if (shifted_phase < wE){
-
-        const Real temp = PI*(wE - shifted_phase)/wE;
-
-        delta = temp - std::sin(temp)*std::cos(temp);
-
-      } else if (shifted_phase < phi_transition){
-
-        delta = 0.0;
-
-      } else if (shifted_phase < phi_transition + wR){
-
-        const Real temp = PI*(shifted_phase - phi_transition)/wR;
-
-        delta = temp - std::sin(temp)*std::cos(temp);
-
-      } else {
-
-        delta = PI;
-
+      const double wE{EFFECTIVE_STROKE_LENGTH*2.0*PI};
+      double mod_phase = std::fmod(phase, 2.0*PI);
+      if (mod_phase < wE){
+          return effective_angle(mod_phase);
       }
-
-      return beat_switch_theta + (PI - 2.0*beat_switch_theta)*delta/PI;
-
+      else {
+          return recovery_angle(s, mod_phase - wE);
+      }
     }
 
     void filament::build_a_beat_tangent(matrix& t, const Real s) const {
@@ -1036,44 +1053,38 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
 
     void filament::build_a_beat_tangent_phase_deriv(matrix& k, const Real s) const {
 
-      const Real fac = 2.0*(PI - 2.0*beat_switch_theta);
+      const double wE{EFFECTIVE_STROKE_LENGTH*2.0*PI};
+      double mod_phase = std::fmod(phase, 2.0*PI);
+      double d_theta;
+      if (mod_phase < wE){
+          d_theta = -THETA_0/(PI*EFFECTIVE_STROKE_LENGTH);
+      }
+      else {
+          double rotation_term;
+          rotation_term = .0/(PI*(1.0 - EFFECTIVE_STROKE_LENGTH));
 
-      const Real wR = RECOVERY_STROKE_WINDOW_LENGTH*2.0*PI;
-      const Real wE = EFFECTIVE_STROKE_LENGTH*2.0*PI;
-      const Real phi_transition = wE + s*(2.0*PI - wE - wR); // Assumes 0 <= s <= 1
+          double first_term;
+          first_term = (1.0 - TRAVELLING_WAVE_IMPORTANCE)*rotation_term;
 
-      //const Real shifted_phase = phase - 2.0*PI*std::floor(0.5*phase/PI);
-      Real shifted_phase = phase - s*2.0*PI*ZERO_VELOCITY_AVOIDANCE_LENGTH;
-      shifted_phase -= 2.0*PI*std::floor(0.5*shifted_phase/PI);
+          double second_term;
+          double transition_deriv_argument;
 
-      Real delta_deriv;
+          transition_deriv_argument = (
+            s - (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)*phase / (
+                2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
+            )
+          )/TRAVELLING_WAVE_WINDOW + 0.5;
+          second_term = -TRAVELLING_WAVE_IMPORTANCE*transition_function_derivative(
+            transition_deriv_argument
+          )*(FIL_LENGTH + TRAVELLING_WAVE_WINDOW)/ (
+                2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
+          );
 
-      if (shifted_phase < wE){
-
-        const Real temp = PI*(wE - shifted_phase)/wE;
-
-        delta_deriv = std::sin(temp);
-        delta_deriv *= -delta_deriv/wE;
-
-      } else if (shifted_phase < phi_transition){
-
-        delta_deriv = 0.0;
-
-      } else if (shifted_phase < phi_transition + wR){
-
-        const Real temp = PI*(shifted_phase - phi_transition)/wR;
-
-        delta_deriv = std::sin(temp);
-        delta_deriv *= delta_deriv/wR;
-
-      } else {
-
-        delta_deriv = 0.0;
-
+          d_theta = THETA_0*(first_term + second_term);
       }
 
-      k(0) = fac*delta_deriv*std::cos(build_a_beat_tangent_angle(s));
-      k(1) = -fac*delta_deriv*std::sin(build_a_beat_tangent_angle(s));
+      k(0) = d_theta*std::cos(build_a_beat_tangent_angle(s));
+      k(1) = -d_theta*std::sin(build_a_beat_tangent_angle(s));
       k(2) = 0.0;
 
     }
