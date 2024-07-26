@@ -1063,12 +1063,14 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
           d_theta = -THETA_0/(PI*EFFECTIVE_STROKE_LENGTH);
       }
       else {
+          printf("we're in recovery stroke\n");
+          
           double rotation_term;
           rotation_term = .0/(PI*(1.0 - EFFECTIVE_STROKE_LENGTH));
-
+          printf("rotation_term is %f\n", rotation_term);
           double first_term;
           first_term = (1.0 - TRAVELLING_WAVE_IMPORTANCE)*rotation_term;
-
+          printf("first_term is %f\n", first_term);
           double second_term;
           double transition_deriv_argument;
 
@@ -1077,13 +1079,16 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
                 2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
             )
           )/TRAVELLING_WAVE_WINDOW + 0.5;
+          printf("transition_deriv_argument is %f\n", transition_deriv_argument);
           second_term = -TRAVELLING_WAVE_IMPORTANCE*transition_function_derivative(
             transition_deriv_argument
           )*(FIL_LENGTH + TRAVELLING_WAVE_WINDOW)/ (
                 2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
           );
+          printf("second_term is %f\n", second_term);
 
           d_theta = THETA_0*(first_term + second_term);
+          printf("d_theta is %f\n\n", d_theta);
       }
       ///
 
@@ -1126,6 +1131,7 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
       k(0) = fac*delta_deriv*std::cos(build_a_beat_tangent_angle(s));
       k(1) = -fac*delta_deriv*std::sin(build_a_beat_tangent_angle(s));
       k(2) = 0.0;
+      printf("delta_deriv is %f\n", delta_deriv);
     }
 
   #endif
