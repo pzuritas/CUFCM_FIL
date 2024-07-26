@@ -1079,40 +1079,45 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
 
     void filament::build_a_beat_tangent_phase_deriv(matrix& k, const Real s) const {
 
-      const double wE{EFFECTIVE_STROKE_LENGTH*2.0*PI};
-      double mod_phase = std::fmod(phase, 2.0*PI);
-      double d_theta;
-      if (mod_phase < wE){
-          d_theta = -THETA_0/(PI*EFFECTIVE_STROKE_LENGTH);
+            const Real fac = 2.0*(PI - 2.0*beat_switch_theta);
+
+      const Real wR = RECOVERY_STROKE_WINDOW_LENGTH*2.0*PI;
+      const Real wE = EFFECTIVE_STROKE_LENGTH*2.0*PI;
+      const Real phi_transition = wE + s*(2.0*PI - wE - wR); // Assumes 0 <= s <= 1
+
+      //const Real shifted_phase = phase - 2.0*PI*std::floor(0.5*phase/PI);
+      Real shifted_phase = phase - s*2.0*PI*ZERO_VELOCITY_AVOIDANCE_LENGTH;
+      shifted_phase -= 2.0*PI*std::floor(0.5*shifted_phase/PI);
+
+      Real delta_deriv;
+
+      if (shifted_phase < wE){
+
+        const Real temp = PI*(wE - shifted_phase)/wE;
+
+        delta_deriv = std::sin(temp);
+        delta_deriv *= -delta_deriv/wE;
+
+      } else if (shifted_phase < phi_transition){
+
+        delta_deriv = 0.0;
+
+      } else if (shifted_phase < phi_transition + wR){
+
+        const Real temp = PI*(shifted_phase - phi_transition)/wR;
+
+        delta_deriv = std::sin(temp);
+        delta_deriv *= delta_deriv/wR;
+
+      } else {
+
+        delta_deriv = 0.0;
+
       }
-      else {
-          double rotation_term;
-          rotation_term = .0/(PI*(1.0 - EFFECTIVE_STROKE_LENGTH));
 
-          double first_term;
-          first_term = (1.0 - TRAVELLING_WAVE_IMPORTANCE)*rotation_term;
-
-          double second_term;
-          double transition_deriv_argument;
-
-          transition_deriv_argument = (
-            s - (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)*phase / (
-                2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
-            )
-          )/TRAVELLING_WAVE_WINDOW + 0.5;
-          second_term = -TRAVELLING_WAVE_IMPORTANCE*transition_function_derivative(
-            transition_deriv_argument
-          )*(FIL_LENGTH + TRAVELLING_WAVE_WINDOW)/ (
-                2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
-          );
-
-          d_theta = THETA_0*(first_term + second_term);
-      }
-
-      k(0) = d_theta*std::cos(build_a_beat_tangent_angle(s));
-      k(1) = -d_theta*std::sin(build_a_beat_tangent_angle(s));
+      k(0) = fac*delta_deriv*std::cos(build_a_beat_tangent_angle(s));
+      k(1) = -fac*delta_deriv*std::sin(build_a_beat_tangent_angle(s));
       k(2) = 0.0;
-
     }
 
   #endif
