@@ -1031,14 +1031,40 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
 
     Real filament::build_a_beat_tangent_angle(const Real s) const {
 
-      const double wE{EFFECTIVE_STROKE_LENGTH*2.0*PI};
-      double mod_phase = std::fmod(phase, 2.0*PI);
-      if (mod_phase < wE){
-          return effective_angle(mod_phase);
+      const Real wR = RECOVERY_STROKE_WINDOW_LENGTH*2.0*PI;
+      const Real wE = EFFECTIVE_STROKE_LENGTH*2.0*PI;
+      const Real phi_transition = wE + s*(2.0*PI - wE - wR); // Assumes 0 <= s <= 1
+
+      //const Real shifted_phase = phase - 2.0*PI*std::floor(0.5*phase/PI);
+      Real shifted_phase = phase - s*2.0*PI*ZERO_VELOCITY_AVOIDANCE_LENGTH;
+      shifted_phase -= 2.0*PI*std::floor(0.5*shifted_phase/PI);
+
+      Real delta;
+
+      if (shifted_phase < wE){
+
+        const Real temp = PI*(wE - shifted_phase)/wE;
+
+        delta = temp - std::sin(temp)*std::cos(temp);
+
+      } else if (shifted_phase < phi_transition){
+
+        delta = 0.0;
+
+      } else if (shifted_phase < phi_transition + wR){
+
+        const Real temp = PI*(shifted_phase - phi_transition)/wR;
+
+        delta = temp - std::sin(temp)*std::cos(temp);
+
+      } else {
+
+        delta = PI;
+
       }
-      else {
-          return recovery_angle(s, mod_phase - wE);
-      }
+
+      return beat_switch_theta + (PI - 2.0*beat_switch_theta)*delta/PI;
+
     }
 
     void filament::build_a_beat_tangent(matrix& t, const Real s) const {

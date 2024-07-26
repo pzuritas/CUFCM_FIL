@@ -7,11 +7,11 @@ class DRIVER:
     def __init__(self):
         self.globals_name = 'input/globals.ini'
         self.afix = ''
-        self.category = 'two?-build-a-beat/'
+        self.category = 'one-build-a-beat-test-change-angle/'
 
         self.exe_name = 'cilia_1e-4_testing_build_a_beat'
         
-        self.date = '20240725'
+        self.date = '20240726'
 
         self.dir = f"data/{self.category}{self.date}{self.afix}/"
 
