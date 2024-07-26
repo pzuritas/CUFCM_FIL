@@ -7,13 +7,11 @@ class DRIVER:
     def __init__(self):
         self.globals_name = 'input/globals.ini'
         self.afix = ''
-        self.category = 'build-a-beat/'
-        # self.category = 'IVP159_flowfield/'
+        self.category = 'two?-build-a-beat/'
+
+        self.exe_name = 'cilia_1e-4_testing_build_a_beat'
         
-        # self.exe_name = 'cilia_1e-4_30_tilt_90deg'
-        self.exe_name = 'cilia_1e-4_test'
-        
-        self.date = '20240712'
+        self.date = '20240725'
 
         self.dir = f"data/{self.category}{self.date}{self.afix}/"
 
@@ -43,7 +41,6 @@ class DRIVER:
                      "hex_num": [],
                      "reverse_fil_direction_ratio": []}
 
-        # self.sweep_shape = (1, 12, 4, 1)
         self.sweep_shape = (1, 1, 1, 1)
 
         self.num_sim = 0
@@ -90,8 +87,8 @@ class DRIVER:
                         force_mag = 1
 
                         # # planar triangle
-                        nfil = int(64*(i+1))
-                        nblob = int(25600*(i+1))
+                        nfil = int(2*(i+1))
+                        nblob = int(256*(i+1))
                         ar = round(1, 2)
                         period = 1
                         spring_factor = round(0.005 + 0.005*i, 3)
@@ -105,52 +102,7 @@ class DRIVER:
                         blob_x_dim=160*(i+1)
                         hex_num=2
                         reverse_fil_direction_ratio=0.0
-                        sim_length = 100.0
-
-                        # nfil = int(1*(i+1))
-                        # nblob = int(4096*(i+1))
-                        # fil_spacing=256.0
-                        # blob_spacing=4.0
-                        # fil_x_dim=2
-                        # blob_x_dim=64
-                        # sim_length = 3
-
-
-                        # # IVP sim
-                        # nfil = int(159 + 480*i)
-                        # nblob = int(9000 + 31961*i)
-                        # ar = round(8.00 + 7*i, 2)
-                        # spring_factor = round(0.005 + 0.00, 3)
-                        # period = 1
-                        # sim_length = 100
-
-                        # # nfil = int(639 + 0*i)
-                        # # nblob = int(40961 + 0*i)
-                        # # ar = round(15.00, 2)
-                        # # spring_factor = round(0.005 + 0.005*i, 3)
-                        # # period = 1.0
-                        # # sim_length = 12
-
-
-                        # # icosahedral
-                        # nfil = int(640)
-                        # nblob = int(40962)
-                        # ar = round(15.0, 2)
-                        # spring_factor = round(0.005 + 0.008*i*(i//4+1), 3)
-
-                        # # centric
-                        # nfil = int(768)
-                        # nblob = int(19200)
-                        # ar = round(12.65, 2)
-                        # spring_factor = round(0.005 + 0.008*i*(i//4+1), 3)
-
-                        # # # ishikawa
-                        # nfil = int(160)
-                        # nblob = int(10242)
-                        # ar = round(6.00, 2)
-                        # spring_factor = round(0.005 + 0.00*i*(i//4+1), 3)
-                        # nseg = 40
-
+                        sim_length = 10.0
 
                         if(self.exe_name == 'cilia_ref'):
                             nfil = 1

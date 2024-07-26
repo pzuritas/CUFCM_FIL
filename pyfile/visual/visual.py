@@ -28,11 +28,9 @@ class VISUAL:
         self.globals_name = 'globals.ini'
 
 
-        self.date = '20240712'
+        self.date = '20240725'
 
-        self.date = '20240712'
-        # self.date = '20240614_long'
-        self.dir = f"data/build-a-beat/{self.date}/"
+        self.dir = f"data/many-build-a-beat/{self.date}/"
 
         # self.date = '20240620'
         # self.dir = f"data/IVP159_flowfield/{self.date}/"
