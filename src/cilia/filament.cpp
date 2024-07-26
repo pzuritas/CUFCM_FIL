@@ -1063,14 +1063,10 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
           d_theta = -THETA_0/(PI*EFFECTIVE_STROKE_LENGTH);
       }
       else {
-          printf("we're in recovery stroke\n");
-          
           double rotation_term;
-          rotation_term = .0/(PI*(1.0 - EFFECTIVE_STROKE_LENGTH));
-          printf("rotation_term is %f\n", rotation_term);
+          rotation_term = 1.0/(PI*(1.0 - EFFECTIVE_STROKE_LENGTH));
           double first_term;
           first_term = (1.0 - TRAVELLING_WAVE_IMPORTANCE)*rotation_term;
-          printf("first_term is %f\n", first_term);
           double second_term;
           double transition_deriv_argument;
 
@@ -1079,59 +1075,19 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
                 2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
             )
           )/TRAVELLING_WAVE_WINDOW + 0.5;
-          printf("transition_deriv_argument is %f\n", transition_deriv_argument);
           second_term = -TRAVELLING_WAVE_IMPORTANCE*transition_function_derivative(
             transition_deriv_argument
           )*(FIL_LENGTH + TRAVELLING_WAVE_WINDOW)/ (
                 2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
           );
-          printf("second_term is %f\n", second_term);
 
           d_theta = THETA_0*(first_term + second_term);
-          printf("d_theta is %f\n\n", d_theta);
       }
       ///
 
-      const Real fac = 2.0*(PI - 2.0*beat_switch_theta);
-
-      const Real wR = RECOVERY_STROKE_WINDOW_LENGTH*2.0*PI;
-      // const Real wE = EFFECTIVE_STROKE_LENGTH*2.0*PI;
-      const Real phi_transition = wE + s*(2.0*PI - wE - wR); // Assumes 0 <= s <= 1
-
-      //const Real shifted_phase = phase - 2.0*PI*std::floor(0.5*phase/PI);
-      Real shifted_phase = phase - s*2.0*PI*ZERO_VELOCITY_AVOIDANCE_LENGTH;
-      shifted_phase -= 2.0*PI*std::floor(0.5*shifted_phase/PI);
-
-      Real delta_deriv;
-
-      if (shifted_phase < wE){
-
-        const Real temp = PI*(wE - shifted_phase)/wE;
-
-        delta_deriv = std::sin(temp);
-        delta_deriv *= -delta_deriv/wE;
-
-      } else if (shifted_phase < phi_transition){
-
-        delta_deriv = 0.0;
-
-      } else if (shifted_phase < phi_transition + wR){
-
-        const Real temp = PI*(shifted_phase - phi_transition)/wR;
-
-        delta_deriv = std::sin(temp);
-        delta_deriv *= delta_deriv/wR;
-
-      } else {
-
-        delta_deriv = 0.0;
-
-      }
-
-      k(0) = fac*delta_deriv*std::cos(build_a_beat_tangent_angle(s));
-      k(1) = -fac*delta_deriv*std::sin(build_a_beat_tangent_angle(s));
+      k(0) = d_theta*std::cos(build_a_beat_tangent_angle(s));
+      k(1) = -d_theta*std::sin(build_a_beat_tangent_angle(s));
       k(2) = 0.0;
-      printf("delta_deriv is %f\n", delta_deriv);
     }
 
   #endif
