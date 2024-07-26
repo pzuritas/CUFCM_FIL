@@ -1054,10 +1054,43 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
 
     void filament::build_a_beat_tangent_phase_deriv(matrix& k, const Real s) const {
 
-            const Real fac = 2.0*(PI - 2.0*beat_switch_theta);
+
+      // add new beat to see if segfault is due to assignments
+      const double wE{EFFECTIVE_STROKE_LENGTH*2.0*PI};
+      double mod_phase = std::fmod(phase, 2.0*PI);
+      double d_theta;
+      if (mod_phase < wE){
+          d_theta = -THETA_0/(PI*EFFECTIVE_STROKE_LENGTH);
+      }
+      else {
+          double rotation_term;
+          rotation_term = .0/(PI*(1.0 - EFFECTIVE_STROKE_LENGTH));
+
+          double first_term;
+          first_term = (1.0 - TRAVELLING_WAVE_IMPORTANCE)*rotation_term;
+
+          double second_term;
+          double transition_deriv_argument;
+
+          transition_deriv_argument = (
+            s - (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)*phase / (
+                2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
+            )
+          )/TRAVELLING_WAVE_WINDOW + 0.5;
+          second_term = -TRAVELLING_WAVE_IMPORTANCE*transition_function_derivative(
+            transition_deriv_argument
+          )*(FIL_LENGTH + TRAVELLING_WAVE_WINDOW)/ (
+                2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
+          );
+
+          d_theta = THETA_0*(first_term + second_term);
+      }
+      ///
+
+      const Real fac = 2.0*(PI - 2.0*beat_switch_theta);
 
       const Real wR = RECOVERY_STROKE_WINDOW_LENGTH*2.0*PI;
-      const Real wE = EFFECTIVE_STROKE_LENGTH*2.0*PI;
+      // const Real wE = EFFECTIVE_STROKE_LENGTH*2.0*PI;
       const Real phi_transition = wE + s*(2.0*PI - wE - wR); // Assumes 0 <= s <= 1
 
       //const Real shifted_phase = phase - 2.0*PI*std::floor(0.5*phase/PI);
