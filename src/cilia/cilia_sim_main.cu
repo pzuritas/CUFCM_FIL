@@ -78,6 +78,7 @@ int main(int argc, char** argv){
     NSWIM = 1;
     NFIL = 1;
     NBLOB = 0;
+    TOTAL_TIME_STEPS = STEPS_PER_PERIOD;
   #endif
 
   // Derive other global variables
