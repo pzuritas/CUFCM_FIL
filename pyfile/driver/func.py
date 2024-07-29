@@ -7,11 +7,11 @@ class DRIVER:
     def __init__(self):
         self.globals_name = 'input/globals.ini'
         self.afix = ''
-        self.category = 'one-build-a-beat-test-change-angle/'
+        self.category = 'one-cilium-validation/'
 
         self.exe_name = 'cilia_1e-4_testing_build_a_beat'
         
-        self.date = '20240726'
+        self.date = '20240729'
 
         self.dir = f"data/{self.category}{self.date}{self.afix}/"
 
@@ -87,8 +87,8 @@ class DRIVER:
                         force_mag = 1
 
                         # # planar triangle
-                        nfil = int(2*(i+1))
-                        nblob = int(256*(i+1))
+                        nfil = int(1*(i+1))
+                        nblob = int(0*(i+1))
                         ar = round(1, 2)
                         period = 1
                         spring_factor = round(0.005 + 0.005*i, 3)
