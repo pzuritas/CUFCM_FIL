@@ -1090,6 +1090,13 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
       k(2) = 0.0;
     }
 
+    void filament::build_a_beat_tangent_angle_deriv(matrix& k, const Real s) const {
+
+      k(0) = s*std::cos(build_a_beat_tangent_angle(s))/FIL_LENGTH;
+      k(1) = -s*std::sin(build_a_beat_tangent_angle(s))/FIL_LENGTH;
+      k(2) = 0.0;
+    }
+
   #endif
 
 #endif
@@ -1145,7 +1152,7 @@ void filament::initial_guess(const int nt, const Real *const x_in, const Real *c
       vel_dir_angle[2] = 0.0;
 
       // Apply rotation through shape_rotation_angle about the z-axis in the reference configuration.
-      const matrix Rshape = (quaternion(std::cos(0.5*shape_rotation_angle), 0.0, 0.0, std::sin(0.5*shape_rotation_angle))).rot_mat();
+      const matrix Rshape = (quaternion(std::cos(0.0), 0.0, 0.0, std::sin(0.0))).rot_mat();
 
     #endif
 
@@ -1155,7 +1162,7 @@ void filament::initial_guess(const int nt, const Real *const x_in, const Real *c
 
     #elif BUILD_A_BEAT
 
-      matrix t1(3,1), t2(3,1), k1(3,1), k2(3,1);
+      matrix t1(3,1), t2(3,1), k1(3,1), k2(3,1), k_angle_1(3,1), k_angle_2(3,1);
 
       build_a_beat_tangent(t1, 0.0);
       t1 = R*t1;
@@ -1163,15 +1170,20 @@ void filament::initial_guess(const int nt, const Real *const x_in, const Real *c
       build_a_beat_tangent_phase_deriv(k1, 0.0);
       k1 = R*k1;
 
+      build_a_beat_tangent_angle_deriv(k_angle_1, 0.0);
+      k_angle_1 = R*k_angle_1;
+
       #if (DYNAMIC_SHAPE_ROTATION || WRITE_GENERALISED_FORCES)
 
         t1 = R*Rshape*t1;
         k1 = R*Rshape*k1;
+        k_angle_1 = R*Rshape*k_angle_1;
 
       #else
 
         t1 = R*t1;
         k1 = R*k1;
+        k_angle_1 = R*k_angle_1;
 
       #endif
 
@@ -1247,32 +1259,29 @@ void filament::initial_guess(const int nt, const Real *const x_in, const Real *c
         // Velocity direction
         build_a_beat_tangent_phase_deriv(k2, Real(n)/Real(NSEG - 1));
 
+        build_a_beat_tangent_angle_deriv(k_angle_2, Real(n)/Real(NSEG - 1));
+
         #if (DYNAMIC_SHAPE_ROTATION || WRITE_GENERALISED_FORCES)
 
           k2 = R*Rshape*k2;
+          k_angle_2 = R*Rshape*k_angle_2;
 
-          matrix ref(3,1);
-          ref(0) = segments[n].x[0] - segments[0].x[0];
-          ref(1) = segments[n].x[1] - segments[0].x[1];
-          ref(2) = segments[n].x[2] - segments[0].x[2];
+          vel_dir_angle[3*n] = vel_dir_angle[3*(n-1)] + 0.5*DL*(
+            k_angle_1(0) + k_angle_2(0)
+          );
+          vel_dir_angle[3*n + 1] = vel_dir_angle[3*(n-1) + 1] + 0.5*DL*(
+            k_angle_1(1) + k_angle_2(1)
+          );
+          vel_dir_angle[3*n + 2] = vel_dir_angle[3*(n-1) + 2] + 0.5*DL*(
+            k_angle_1(2) + k_angle_2(2)
+          );
 
-          ref = Rshape*ref;
-
-          // Turn ref into cross(e_z, ref)
-          ref(2) = -ref(1);
-          ref(1) = ref(0);
-          ref(0) = ref(2);
-          ref(2) = 0.0;
-
-          ref = R*ref;
-
-          vel_dir_angle[3*n] = ref(0);
-          vel_dir_angle[3*n + 1] = ref(1);
-          vel_dir_angle[3*n + 2] = ref(2);
+          k_angle_1 = k_angle_2;
 
         #else
 
           k2 = R*k2;
+          k_angle_2 = R*k_angle_2;
 
         #endif
 

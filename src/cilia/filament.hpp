@@ -131,6 +131,7 @@ public:
       Real build_a_beat_tangent_angle(const Real s) const;
       void build_a_beat_tangent(matrix& t, const Real s) const;
       void build_a_beat_tangent_phase_deriv(matrix& k, const Real s) const;
+      void build_a_beat_tangent_angle_deriv(matrix& k, const Real s) const;
 
     #endif
 
