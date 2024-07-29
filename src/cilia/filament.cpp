@@ -1034,10 +1034,10 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
       const double wE{EFFECTIVE_STROKE_LENGTH*2.0*PI};
       double mod_phase = std::fmod(phase, 2.0*PI);
       if (mod_phase < wE){
-          return effective_angle(mod_phase);
+          return effective_angle(mod_phase) + s*shape_rotation_angle/FIL_LENGTH;
       }
       else {
-          return recovery_angle(s, mod_phase - wE);
+          return recovery_angle(s, mod_phase - wE) + s*shape_rotation_angle/FIL_LENGTH;
       }
 
     }
