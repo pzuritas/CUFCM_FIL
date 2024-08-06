@@ -375,7 +375,9 @@
       Real theta = std::atan2(std::sqrt(sample(0)*sample(0) + sample(1)*sample(1)),sample(2));
       const Real phi = std::atan2(sample(1), sample(0));
 
-      theta = theta*(1-2*shift_ratio)+shift_ratio*PI;
+      // theta = theta*(1-2*shift_ratio)+shift_ratio*PI;
+
+      theta = 2.0*PI/5.0 + theta/5.0;
 
       sample(0) = sample_norm*std::sin(theta)*std::sin(phi);
       sample(1) = sample_norm*std::sin(theta)*std::cos(phi);
@@ -816,7 +818,7 @@
     int num_iters = 0;
 
     // Real shift_ratio = (0.471*FIL_LENGTH)/(0.5*AXIS_DIR_BODY_LENGTH*PI); // value used from Dec 2023 to Feb 2024
-    Real shift_ratio = (1.0*FIL_LENGTH)/(0.5*AXIS_DIR_BODY_LENGTH*PI); // value used from Feb 2024
+    Real shift_ratio = 10000.0; // value used from Feb 2024
 
     while (num_iters < 10000){
 
@@ -1417,7 +1419,6 @@
       std::cout << "Seeding locations according to a spiral pattern..." << std::endl;
 
       
-
       const Real theta_max = 0.5/Real(R_OVER_L); // = 0.5 * 2*PI*L/(2*PI*R), meaning the width of the band is L as measured across the sphere surface.
       const Real h = 2.0*std::sin(theta_max);
       const int num_fils_for_sphere = std::ceil(NFIL*2.0/h);
@@ -1442,7 +1443,7 @@
 
       std::cout << "Seeding..." << std::endl;
 
-      const Real theta_max = 0.5/Real(R_OVER_L); // = 0.5 * 2*PI*L/(2*PI*R), meaning the width of the band is L as measured across the sphere surface.
+      const Real theta_max = 0.5 * 2*PI*L/(2*PI*R); //0.5/Real(R_OVER_L), meaning the width of the band is L as measured across the sphere surface.
       const Real h = 2.0*std::sin(theta_max);
       const int num_fils_in_main_band = std::round(0.9*NFIL); // Put 90% in the main band
       const int num_fils_for_sphere = std::ceil(num_fils_in_main_band*2.0/h);

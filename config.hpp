@@ -164,7 +164,7 @@ extern std::string CUFCM_CONFIG_FILE_NAME;
 
 #endif
 
-#define BODY_OR_SURFACE_TYPE 5
+#define BODY_OR_SURFACE_TYPE 0
 // Valid options:
 // 0 = An infinite plane wall at z = 0. This choice has some sub-types (see below).
 // 1 = Deformed planes with 2 principal curvatures (partially implemented)
@@ -175,7 +175,7 @@ extern std::string CUFCM_CONFIG_FILE_NAME;
 
 #if BODY_OR_SURFACE_TYPE==0
 
-  #define SEEDING_TYPE 2
+  #define SEEDING_TYPE 1
   // Valid options:
   // 0 = Filaments are placed on a rectangular grid.
   // 1 = Filaments are placed on a hexagonal grid.
@@ -319,7 +319,7 @@ extern int TOTAL_TIME_STEPS;
 // This factor avoids over-adjusting during the Broyden's iterations.
 // Setting it to 1 will give standard behaviour, and values smaller than 1 should help with convergence problems by having Broyden's method do more of the heavy lifting.
 // Choosing 0.4 seems to work well when using GMRES, whilst 0.1 appears to be a good choice for a "Broyden's only" simulation.
-#define JACOBIAN_CONFIDENCE_FACTOR 0.1
+#define JACOBIAN_CONFIDENCE_FACTOR 0.4
 
 #define MAX_BROYDEN_ITER 400 // Maximum number of Broyden's method iterations per time-step.
 #define TOL 1e-4 // Tolerance to be reached by the Broyden's method solve.
@@ -332,12 +332,12 @@ extern int TOTAL_TIME_STEPS;
 
 #if SOLVER_TYPE==1
 
-  #define MAX_LINEAR_SYSTEM_ITER 350 // Maximum number of iterations used to solve the linear system in each mobility solve.
-  #define LINEAR_SYSTEM_TOL 1e-4 // Relative tolerance in the linear system solves.
+  #define MAX_LINEAR_SYSTEM_ITER 500 // Maximum number of iterations used to solve the linear system in each mobility solve.
+  #define LINEAR_SYSTEM_TOL 1e-6 // Relative tolerance in the linear system solves.
 
   // GMRES preconditioner type.
   // Uses left preconditioning if set to false; if you don't want a preconditioner,
-  // simply write "return in;" at the start of rpy_mobility_solver::apply_preconditioner(...) and it should be optimised away.
+  // simply write "return in;" at the start of rpy_mobility_solver::apply_preconditioner(...) and it should be optimised away. THIS HAS BEEN DONE
   // Right preconditioning seems to result in fewer GMRES iterations and also means that the error in GMRES
   // is the same as the error in the original system we want to solve, so this is the default option.
   // This ought to be checked whenever the preconditioner is changed though.
@@ -356,8 +356,8 @@ extern int TOTAL_TIME_STEPS;
 
 #else
 
-  #define STEPS_PER_PERIOD 300
-  #define SAVES_PER_PERIOD 30
+  #define STEPS_PER_PERIOD 1000
+  #define SAVES_PER_PERIOD 50
 
 #endif
 
