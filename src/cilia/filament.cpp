@@ -1029,6 +1029,12 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
 
   #elif BUILD_A_BEAT
 
+    #if !DYNAMIC_SHAPE_ROTATION
+
+      double shape_rotation_angle = 0.0;
+
+    #endif
+
     Real filament::build_a_beat_tangent_angle(const Real s) const {
 
       const double wE{EFFECTIVE_STROKE_LENGTH*2.0*PI};
@@ -1071,10 +1077,10 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
           double transition_deriv_argument;
 
           transition_deriv_argument = (
-            s - (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)*phase / (
+            -(FIL_LENGTH + TRAVELLING_WAVE_WINDOW) / (
                 2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
             )
-          )/TRAVELLING_WAVE_WINDOW + 0.5;
+          )/TRAVELLING_WAVE_WINDOW;
           second_term = -TRAVELLING_WAVE_IMPORTANCE*transition_function_derivative(
             transition_deriv_argument
           )*(FIL_LENGTH + TRAVELLING_WAVE_WINDOW)/ (
@@ -1152,7 +1158,7 @@ void filament::initial_guess(const int nt, const Real *const x_in, const Real *c
       vel_dir_angle[2] = 0.0;
 
       // Apply rotation through shape_rotation_angle about the z-axis in the reference configuration.
-      const matrix Rshape = (quaternion(std::cos(0.0), 0.0, 0.0, std::sin(0.0))).rot_mat();
+      // const matrix Rshape = (quaternion(std::cos(0.0), 0.0, 0.0, std::sin(0.0))).rot_mat();
 
     #endif
 
@@ -1175,9 +1181,9 @@ void filament::initial_guess(const int nt, const Real *const x_in, const Real *c
 
       #if (DYNAMIC_SHAPE_ROTATION || WRITE_GENERALISED_FORCES)
 
-        t1 = R*Rshape*t1;
-        k1 = R*Rshape*k1;
-        k_angle_1 = R*Rshape*k_angle_1;
+        t1 = R*t1;
+        k1 = R*k1;
+        k_angle_1 = R*k_angle_1;
 
       #else
 
@@ -1242,7 +1248,7 @@ void filament::initial_guess(const int nt, const Real *const x_in, const Real *c
 
         #if (DYNAMIC_SHAPE_ROTATION || WRITE_GENERALISED_FORCES)
 
-          t2 = R*Rshape*t2;
+          t2 = R*t2;
 
         #else
 
@@ -1263,8 +1269,8 @@ void filament::initial_guess(const int nt, const Real *const x_in, const Real *c
 
         #if (DYNAMIC_SHAPE_ROTATION || WRITE_GENERALISED_FORCES)
 
-          k2 = R*Rshape*k2;
-          k_angle_2 = R*Rshape*k_angle_2;
+          k2 = R*k2;
+          k_angle_2 = R*k_angle_2;
 
           vel_dir_angle[3*n] = vel_dir_angle[3*(n-1)] + 0.5*DL*(
             k_angle_1(0) + k_angle_2(0)
