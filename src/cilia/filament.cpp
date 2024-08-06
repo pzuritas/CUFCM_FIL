@@ -1077,11 +1077,11 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
           double transition_deriv_argument;
 
           transition_deriv_argument = (
-            -(FIL_LENGTH + TRAVELLING_WAVE_WINDOW) / (
+            s - (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)*phase / (
                 2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
             )
-          )/TRAVELLING_WAVE_WINDOW;
-          second_term = -TRAVELLING_WAVE_IMPORTANCE*transition_function_derivative(
+          )/TRAVELLING_WAVE_WINDOW + 0.5;
+          second_term = TRAVELLING_WAVE_IMPORTANCE*transition_function_derivative(
             transition_deriv_argument
           )*(FIL_LENGTH + TRAVELLING_WAVE_WINDOW)/ (
                 2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
