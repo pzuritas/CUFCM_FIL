@@ -7,7 +7,7 @@ class DRIVER:
     def __init__(self):
         self.globals_name = 'input/globals.ini'
         self.afix = ''
-        self.category = 'elasticity-plane-fixed-bug-maybe/'
+        self.category = 'elasticity-validation/'
 
         self.exe_name = 'cilia_1e-4_testing_build_a_beat'
 
@@ -82,12 +82,12 @@ class DRIVER:
                     for l in range(self.sweep_shape[3]):
 
                         seg_sep = 2.6
-                        nseg = 20
+                        nseg = 11
                         force_mag = 1
 
                         # # planar triangle
-                        nfil = int(64*(i+1))
-                        nblob = int(1024*(i+1))
+                        nfil = int(1*(i+1))
+                        nblob = int(0*(i+1))
                         ar = round(1, 2)
                         period = 1
                         spring_factor = 1e-3 # k_tidle
@@ -101,7 +101,7 @@ class DRIVER:
                         blob_x_dim=160*(i+1)
                         hex_num=2
                         reverse_fil_direction_ratio=0.0
-                        sim_length = 1.0
+                        sim_length = 10.0
 
                         if(self.exe_name == 'cilia_ref'):
                             nfil = 1
