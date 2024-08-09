@@ -9,9 +9,9 @@ class DRIVER:
         self.afix = ''
         self.category = 'elasticity-validation/'
 
-        self.exe_name = 'cilia_1e-4_testing_build_a_beat'
+        self.exe_name = 'cilia_1e-6_testing_build_a_beat'
 
-        self.date = '20240807'
+        self.date = '20240809'
 
         self.dir = f"data/{self.category}{self.date}{self.afix}/"
 
