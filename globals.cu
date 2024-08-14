@@ -21,6 +21,9 @@ Real PERIOD = 1.0;
 Real DT = PERIOD/STEPS_PER_PERIOD;
 int TOTAL_TIME_STEPS = 1;
 
+Real EFFECTIVE_STROKE_LENGTH = 0.3; // f_eff
+Real THETA_0 = PI/2.1;  // theta_0
+
 std::string SIMULATION_DIR = "data/expr_sims/global/";
 std::string SIMULATION_FILE = "cilia";
 

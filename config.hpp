@@ -112,18 +112,15 @@ extern std::string CUFCM_CONFIG_FILE_NAME;
 
     #define SCALED_BEAT_AMPLITUDE 1.99 // A value in (0,2), giving the beat amplitude in units of filament length.
     #define RECOVERY_STROKE_WINDOW_LENGTH (1.0/12.0) // A value in (0,1), giving the fraction of the beat cycle over which a given point on the filament completes its recovery-stroke tangent angle change.
-    #define EFFECTIVE_STROKE_LENGTH 0.75 // A value in (0,1), giving the fraction of the cycle spent in the effective stroke.
+    // #define EFFECTIVE_STROKE_LENGTH 0.3 // A value in (0,1), giving the fraction of the cycle spent in the effective stroke.
     // N.B. We must have RECOVERY_STROKE_WINDOW_LENGTH + EFFECTIVE_STROKE_LENGTH < 1
     #define ZERO_VELOCITY_AVOIDANCE_LENGTH 0.05 // A value in (0,1), giving the maximum fraction of the cycle by which we shift the tangent angle curve to ensure the velocity cannot be zero everywhere along the filament at once.
 
-    // define the beat pattern according to platy beat
-    #define EFFECTIVE_STROKE_LENGTH 0.3 // f_eff
 
     #define TRAVELLING_WAVE_WINDOW 0.4  // f_w
     #define TRAVELLING_WAVE_IMPORTANCE 0.85  // f_psi
     #define PI 3.14159265358979323846
     #define ORIENTATION 0.0 // PI/2.0  // orientation
-    #define THETA_0 PI/2.1  // theta_0
 
   #endif
 
@@ -272,6 +269,12 @@ extern Real SIM_LENGTH;
 extern Real PERIOD;
 extern Real DT;
 extern int TOTAL_TIME_STEPS;
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// New parameters
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// define the beat pattern according to platy beat
+extern Real EFFECTIVE_STROKE_LENGTH; // 0.3 // f_eff
+extern Real THETA_0; //PI/2.1  // theta_0
 
 
 #define MU 1.0 // Fluid viscosity.

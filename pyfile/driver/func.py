@@ -103,6 +103,11 @@ class DRIVER:
                         reverse_fil_direction_ratio=0.0
                         sim_length = 10.0
 
+                        pi = 3.14159265358979323846
+                        # new sweep
+                        f_eff = 0.3
+                        theta_0 = pi/2.1
+
                         if(self.exe_name == 'cilia_ref'):
                             nfil = 1
                             nblob = 0
