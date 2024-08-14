@@ -11,7 +11,7 @@ class DRIVER:
 
         self.exe_name = 'cilia_1e-6_testing_build_a_beat'
 
-        self.date = '20240809'
+        self.date = '20240814'
 
         self.dir = f"data/{self.category}{self.date}{self.afix}/"
 
@@ -101,7 +101,7 @@ class DRIVER:
                         blob_x_dim=160*(i+1)
                         hex_num=2
                         reverse_fil_direction_ratio=0.0
-                        sim_length = 2.0
+                        sim_length = 20.0
 
                         if(self.exe_name == 'cilia_ref'):
                             nfil = 1
