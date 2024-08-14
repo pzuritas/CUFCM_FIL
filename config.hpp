@@ -322,7 +322,7 @@ extern int TOTAL_TIME_STEPS;
 #define JACOBIAN_CONFIDENCE_FACTOR 0.4
 
 #define MAX_BROYDEN_ITER 400 // Maximum number of Broyden's method iterations per time-step.
-#define TOL 1e-6 // Tolerance to be reached by the Broyden's method solve.
+#define TOL 1e-8 // Tolerance to be reached by the Broyden's method solve.
 
 #define SOLVER_TYPE 1
 // Valid options:
@@ -333,7 +333,7 @@ extern int TOTAL_TIME_STEPS;
 #if SOLVER_TYPE==1
 
   #define MAX_LINEAR_SYSTEM_ITER 500 // Maximum number of iterations used to solve the linear system in each mobility solve.
-  #define LINEAR_SYSTEM_TOL 1e-6 // Relative tolerance in the linear system solves.
+  #define LINEAR_SYSTEM_TOL 1e-8 // Relative tolerance in the linear system solves.
 
   // GMRES preconditioner type.
   // Uses left preconditioning if set to false; if you don't want a preconditioner,
@@ -356,7 +356,7 @@ extern int TOTAL_TIME_STEPS;
 
 #else
 
-  #define STEPS_PER_PERIOD 5000
+  #define STEPS_PER_PERIOD 353
   #define SAVES_PER_PERIOD 50
 
 #endif

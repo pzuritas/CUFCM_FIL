@@ -101,7 +101,7 @@ class DRIVER:
                         blob_x_dim=160*(i+1)
                         hex_num=2
                         reverse_fil_direction_ratio=0.0
-                        sim_length = 20.0
+                        sim_length = 10.0
 
                         if(self.exe_name == 'cilia_ref'):
                             nfil = 1
