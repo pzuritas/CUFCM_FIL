@@ -40,7 +40,7 @@ extern std::string CUFCM_CONFIG_FILE_NAME;
 #endif
 
 
-#define FIL_USE_DOUBLE_PRECISION true
+#define FIL_USE_DOUBLE_PRECISION false
 
 
 #if FIL_USE_DOUBLE_PRECISION
@@ -88,7 +88,7 @@ extern std::string CUFCM_CONFIG_FILE_NAME;
 // 4 = Squirmer-type simulation; i.e. there aren't actually any filaments/cilia. The slip velocity can be set in the mobility solver.
 
 // Define whether the motion of the rigid bodies is imposed or allowed to evolve dynamically.
-#define PRESCRIBED_BODY_VELOCITIES true
+#define PRESCRIBED_BODY_VELOCITIES false
 
 #define OUTPUT_FORCES false
 #if CILIA_TYPE==0
@@ -124,11 +124,11 @@ extern std::string CUFCM_CONFIG_FILE_NAME;
 
   #endif
 
-  #define DYNAMIC_PHASE_EVOLUTION true
+  #define DYNAMIC_PHASE_EVOLUTION false
   // If true, cilia phase speeds are solved for as part of the dynamics. Note that this requires having run a reference simulation with WRITE_GENERALISED_FORCES=true previously.
   // If false, phase_dot = omega0 is constant for each cilium.
 
-  #define DYNAMIC_SHAPE_ROTATION true
+  #define DYNAMIC_SHAPE_ROTATION false
   // If true, the vertical in the cilia reference configuration can rotate with respect to the surface normal.
   // Essentially, the cilia can 'tip backwards or forwards' in their beat planes.
   // If false, no such rotation ever occurs.
@@ -161,7 +161,7 @@ extern std::string CUFCM_CONFIG_FILE_NAME;
 
 #endif
 
-#define BODY_OR_SURFACE_TYPE 5
+#define BODY_OR_SURFACE_TYPE 2
 // Valid options:
 // 0 = An infinite plane wall at z = 0. This choice has some sub-types (see below).
 // 1 = Deformed planes with 2 principal curvatures (partially implemented)
@@ -189,7 +189,7 @@ extern std::string CUFCM_CONFIG_FILE_NAME;
 
 #elif BODY_OR_SURFACE_TYPE==2 or BODY_OR_SURFACE_TYPE==4 or BODY_OR_SURFACE_TYPE==5
 
-  #define SEEDING_TYPE 3
+  #define SEEDING_TYPE 0
   // Valid options:
   // 0 = Filaments are evenly distributed over the surface.
   // 1 = Filaments are seeded in an equatorial band.
@@ -229,7 +229,7 @@ extern std::string CUFCM_CONFIG_FILE_NAME;
 
 #endif
 
-#define MOBILITY_TYPE 1
+#define MOBILITY_TYPE 4
 // Valid options:
 // 0 = Basic Stokes drag. No hydrodynamic interactions between particles.
 // 1 = Rotne-Prager-Yamakawa (RPY) mobility matrices (with the corrections due to Swan and Brady if an infinite plane wall is selected).
@@ -325,7 +325,7 @@ extern Real THETA_0; //PI/2.1  // theta_0
 #define JACOBIAN_CONFIDENCE_FACTOR 0.4
 
 #define MAX_BROYDEN_ITER 400 // Maximum number of Broyden's method iterations per time-step.
-#define TOL 1e-8 // Tolerance to be reached by the Broyden's method solve.
+#define TOL 1e-6 // Tolerance to be reached by the Broyden's method solve.
 
 #define SOLVER_TYPE 1
 // Valid options:
@@ -336,7 +336,7 @@ extern Real THETA_0; //PI/2.1  // theta_0
 #if SOLVER_TYPE==1
 
   #define MAX_LINEAR_SYSTEM_ITER 500 // Maximum number of iterations used to solve the linear system in each mobility solve.
-  #define LINEAR_SYSTEM_TOL 1e-8 // Relative tolerance in the linear system solves.
+  #define LINEAR_SYSTEM_TOL 1e-6 // Relative tolerance in the linear system solves.
 
   // GMRES preconditioner type.
   // Uses left preconditioning if set to false; if you don't want a preconditioner,
@@ -359,8 +359,8 @@ extern Real THETA_0; //PI/2.1  // theta_0
 
 #else
 
-  #define STEPS_PER_PERIOD 353
-  #define SAVES_PER_PERIOD 50
+  #define STEPS_PER_PERIOD 300
+  #define SAVES_PER_PERIOD 30
 
 #endif
 

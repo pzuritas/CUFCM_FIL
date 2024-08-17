@@ -7,11 +7,11 @@ class DRIVER:
     def __init__(self):
         self.globals_name = 'input/globals.ini'
         self.afix = ''
-        self.category = 'elasticity-validation/'
+        self.category = 'synchronised-sweeps/'
 
-        self.exe_name = 'cilia_1e-6_testing_build_a_beat'
+        self.exe_name = 'cilia_1e-6_sweep'
 
-        self.date = '20240814'
+        self.date = '20240817'
 
         self.dir = f"data/{self.category}{self.date}{self.afix}/"
 
@@ -38,9 +38,13 @@ class DRIVER:
                      "fil_x_dim": [],
                      "blob_x_dim": [],
                      "hex_num": [],
-                     "reverse_fil_direction_ratio": []}
+                     "reverse_fil_direction_ratio": [],
+                     "f_eff": [],
+                     "theta_0": []
+                     }
 
-        self.sweep_shape = (1, 1, 1, 1)
+        self.sweep_shape = (1, 5, 5, 1)
+        # self.sweep_shape = (1, 1, 1, 1)
 
         self.num_sim = 0
 
@@ -85,15 +89,14 @@ class DRIVER:
                         nseg = 11
                         force_mag = 1
 
-                        # # planar triangle
-                        nfil = int(1*(i+1))
-                        nblob = int(0*(i+1))
-                        ar = round(1, 2)
+                        nfil = int(256*(i+1))
+                        nblob = int(40962*(i+1))
+                        ar = 20
                         period = 1
                         spring_factor = 1e-3 # k_tidle
-                        nx=256
-                        ny=256
-                        nz=32
+                        nx=400
+                        ny=400
+                        nz=400
                         boxsize=8000
                         fil_spacing=80.0
                         blob_spacing=8.0
@@ -101,12 +104,12 @@ class DRIVER:
                         blob_x_dim=160*(i+1)
                         hex_num=2
                         reverse_fil_direction_ratio=0.0
-                        sim_length = 10.0
+                        sim_length = 500.0
 
                         pi = 3.14159265358979323846
                         # new sweep
-                        f_eff = 0.3
-                        theta_0 = pi/2.1
+                        f_eff = (0.9 - 0.1)*j/4 + 0.1
+                        theta_0 = (pi/2.1 - pi/6)*k/4 + pi/6
 
                         if(self.exe_name == 'cilia_ref'):
                             nfil = 1
@@ -133,6 +136,8 @@ class DRIVER:
                         self.pars_list["blob_x_dim"].append(blob_x_dim)
                         self.pars_list["hex_num"].append(hex_num)
                         self.pars_list["reverse_fil_direction_ratio"].append(reverse_fil_direction_ratio)
+                        self.pars_list["f_eff"].append(f_eff)
+                        self.pars_list["theta_0"].append(theta_0)
 
                         index += 1
         # Write rules to sim list file
