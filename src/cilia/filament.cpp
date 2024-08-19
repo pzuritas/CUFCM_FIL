@@ -39,7 +39,7 @@ double effective_angle(const double phase) {
 
 double recovery_angle(const double s, const double phase) {
     double rotation = 1.0/(PI*(1.0 - EFFECTIVE_STROKE_LENGTH))*phase - 1.0;
-    double c = (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)/(1.0 - EFFECTIVE_STROKE_LENGTH)
+    double c = (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)/(1.0 - EFFECTIVE_STROKE_LENGTH);
     return THETA_0*((1.0 - TRAVELLING_WAVE_IMPORTANCE)*rotation
         - TRAVELLING_WAVE_IMPORTANCE*transition_function(
                 (s - c*phase / (2.0*PI))/TRAVELLING_WAVE_WINDOW + 0.5
