@@ -39,13 +39,10 @@ double effective_angle(const double phase) {
 
 double recovery_angle(const double s, const double phase) {
     double rotation = 1.0/(PI*(1.0 - EFFECTIVE_STROKE_LENGTH))*phase - 1.0;
+    double c = (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)/(1.0 - EFFECTIVE_STROKE_LENGTH)
     return THETA_0*((1.0 - TRAVELLING_WAVE_IMPORTANCE)*rotation
         - TRAVELLING_WAVE_IMPORTANCE*transition_function(
-                (
-            s - (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)*phase / (
-                2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
-            )
-        )/TRAVELLING_WAVE_WINDOW + 0.5
+                (s - c*phase / (2.0*PI))/TRAVELLING_WAVE_WINDOW + 0.5
     ));
 }
 
@@ -1040,10 +1037,10 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
       const double wE{EFFECTIVE_STROKE_LENGTH*2.0*PI};
       double mod_phase = std::fmod(phase, 2.0*PI);
       if (mod_phase < wE){
-          return effective_angle(mod_phase) + s*shape_rotation_angle/FIL_LENGTH;
+          return effective_angle(mod_phase) + s*shape_rotation_angle/FIL_LENGTH + PI/2.0;
       }
       else {
-          return recovery_angle(s, mod_phase - wE) + s*shape_rotation_angle/FIL_LENGTH;
+          return recovery_angle(s, mod_phase - wE) + s*shape_rotation_angle/FIL_LENGTH + PI/2.0;
       }
 
     }
@@ -1075,11 +1072,9 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
           first_term = (1.0 - TRAVELLING_WAVE_IMPORTANCE)*rotation_term;
           double second_term;
           double transition_deriv_argument;
-
+          double c = (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)/(1.0 - EFFECTIVE_STROKE_LENGTH);
           transition_deriv_argument = (
-            s - (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)*phase / (
-                2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
-            )
+            s - c*phase / (2.0*PI)
           )/TRAVELLING_WAVE_WINDOW + 0.5;
           second_term = TRAVELLING_WAVE_IMPORTANCE*transition_function_derivative(
             transition_deriv_argument
