@@ -39,10 +39,10 @@ Real effective_angle(const Real local_phase) {
 
 Real recovery_angle(const Real s, const Real local_phase) {
     Real rotation = 1.0/(PI*(1.0 - EFFECTIVE_STROKE_LENGTH))*local_phase - 1.0;
-    Real c = (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)/(1.0 - EFFECTIVE_STROKE_LENGTH);
+    Real c = (FIL_LENGTH + TRAVELLING_WAVE_WINDOW*FIL_LENGTH)/(1.0 - EFFECTIVE_STROKE_LENGTH);
     return THETA_0*((1.0 - TRAVELLING_WAVE_IMPORTANCE)*rotation
         - TRAVELLING_WAVE_IMPORTANCE*transition_function(
-                (s - c*local_phase / (2.0*PI))/TRAVELLING_WAVE_WINDOW + 0.5
+                (s - c*local_phase / (2.0*PI))/(TRAVELLING_WAVE_WINDOW*FIL_LENGTH) + 0.5
     ));
 }
 
@@ -1071,13 +1071,13 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
           first_term = (1.0 - TRAVELLING_WAVE_IMPORTANCE)*rotation_term;
           Real second_term;
           Real transition_deriv_argument;
-          Real c = (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)/(1.0 - EFFECTIVE_STROKE_LENGTH);
+          Real c = (FIL_LENGTH + TRAVELLING_WAVE_WINDOW*FIL_LENGTH)/(1.0 - EFFECTIVE_STROKE_LENGTH);
           transition_deriv_argument = (
             s - c*mod_phase / (2.0*PI)
-          )/TRAVELLING_WAVE_WINDOW + 0.5;
+          )/(TRAVELLING_WAVE_WINDOW*FIL_LENGTH) + 0.5;
           second_term = TRAVELLING_WAVE_IMPORTANCE*transition_function_derivative(
             transition_deriv_argument
-          )*(FIL_LENGTH + TRAVELLING_WAVE_WINDOW)/ (
+          )*(FIL_LENGTH + TRAVELLING_WAVE_WINDOW*FIL_LENGTH)/ (
                 2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
           );
 
