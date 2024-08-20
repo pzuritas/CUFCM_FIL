@@ -11,7 +11,7 @@ class DRIVER:
 
         self.exe_name = 'cilia_1e-6_testing_build_a_beat'
 
-        self.date = '20240814'
+        self.date = '20240820'
 
         self.dir = f"data/{self.category}{self.date}{self.afix}/"
 
@@ -38,7 +38,10 @@ class DRIVER:
                      "fil_x_dim": [],
                      "blob_x_dim": [],
                      "hex_num": [],
-                     "reverse_fil_direction_ratio": []}
+                     "reverse_fil_direction_ratio": [],
+                     "f_eff": [],
+                     "theta_0": []
+                     }
 
         self.sweep_shape = (1, 1, 1, 1)
 
@@ -133,6 +136,8 @@ class DRIVER:
                         self.pars_list["blob_x_dim"].append(blob_x_dim)
                         self.pars_list["hex_num"].append(hex_num)
                         self.pars_list["reverse_fil_direction_ratio"].append(reverse_fil_direction_ratio)
+                        self.pars_list["f_eff"].append(f_eff)
+                        self.pars_list["theta_0"].append(theta_0)
 
                         index += 1
         # Write rules to sim list file
