@@ -6,7 +6,7 @@
 #include "filament.hpp"
 #include "../../config.hpp"
 
-double transition_function(const double x) {
+Real transition_function(const Real x) {
     if (x <= -0.5) {
         return -1.0;
     } else if (-0.5 < x && x < 0.5) {
@@ -17,35 +17,32 @@ double transition_function(const double x) {
     }
 }
 
-double sech(const double x) {
+Real sech(const Real x) {
     return 2.0 / (std::exp(x) + std::exp(-x));
 }
 
-double transition_function_derivative(const double x) {
+Real transition_function_derivative(const Real x) {
 if (x <= -0.5 || x >= 0.5) {
         return 0.0;
     } else {
-        double numerator = 4.0 * (4.0 * x * x + 1.0) * std::pow(sech(
+        Real numerator = 4.0 * (4.0 * x * x + 1.0) * std::pow(sech(
             4.0 * x / (4.0 * x * x - 1.0)
         ), 2);
-        double denominator = std::pow((1.0 - 4.0 * x * x), 2);
+        Real denominator = std::pow((1.0 - 4.0 * x * x), 2);
         return numerator / denominator;
     }
 }
 
-double effective_angle(const double phase) {
-    return THETA_0*(1.0 - phase/(PI*EFFECTIVE_STROKE_LENGTH));
+Real effective_angle(const Real local_phase) {
+    return THETA_0*(1.0 - local_phase/(PI*EFFECTIVE_STROKE_LENGTH));
 }
 
-double recovery_angle(const double s, const double phase) {
-    double rotation = 1.0/(PI*(1.0 - EFFECTIVE_STROKE_LENGTH))*phase - 1.0;
+Real recovery_angle(const Real s, const Real local_phase) {
+    Real rotation = 1.0/(PI*(1.0 - EFFECTIVE_STROKE_LENGTH))*local_phase - 1.0;
+    Real c = (FIL_LENGTH + TRAVELLING_WAVE_WINDOW*FIL_LENGTH)/(1.0 - EFFECTIVE_STROKE_LENGTH);
     return THETA_0*((1.0 - TRAVELLING_WAVE_IMPORTANCE)*rotation
         - TRAVELLING_WAVE_IMPORTANCE*transition_function(
-                (
-            s - (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)*phase / (
-                2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
-            )
-        )/TRAVELLING_WAVE_WINDOW + 0.5
+                (s - c*local_phase / (2.0*PI))/(TRAVELLING_WAVE_WINDOW*FIL_LENGTH) + 0.5
     ));
 }
 
@@ -1031,19 +1028,19 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
 
     #if !DYNAMIC_SHAPE_ROTATION
 
-      double shape_rotation_angle = 0.0;
+      Real shape_rotation_angle = 0.0;
 
     #endif
 
     Real filament::build_a_beat_tangent_angle(const Real s) const {
 
-      const double wE{EFFECTIVE_STROKE_LENGTH*2.0*PI};
-      double mod_phase = std::fmod(phase, 2.0*PI);
-      if (mod_phase < wE){
-          return effective_angle(mod_phase) + s*shape_rotation_angle/FIL_LENGTH;
+      const Real cutoff = EFFECTIVE_STROKE_LENGTH*2.0*PI;
+      Real mod_phase = phase - 2.0*PI*std::floor(0.5*phase/PI);
+      if (mod_phase < cutoff){
+          return effective_angle(mod_phase) + s*shape_rotation_angle/FIL_LENGTH + PI/2.0;
       }
       else {
-          return recovery_angle(s, mod_phase - wE) + s*shape_rotation_angle/FIL_LENGTH;
+          return recovery_angle(s, mod_phase - cutoff) + s*shape_rotation_angle/FIL_LENGTH + PI/2.0;
       }
 
     }
@@ -1060,30 +1057,27 @@ void filament::accept_state_from_rigid_body(const Real *const x_in, const Real *
 
     void filament::build_a_beat_tangent_phase_deriv(matrix& k, const Real s) const {
 
-
-      // add new beat to see if segfault is due to assignments
-      const double wE{EFFECTIVE_STROKE_LENGTH*2.0*PI};
-      double mod_phase = std::fmod(phase, 2.0*PI);
-      double d_theta;
-      if (mod_phase < wE){
+      const Real cutoff = EFFECTIVE_STROKE_LENGTH*2.0*PI;
+      Real mod_phase = phase - 2.0*PI*std::floor(0.5*phase/PI);
+      Real d_theta;
+      if (mod_phase < cutoff){
           d_theta = -THETA_0/(PI*EFFECTIVE_STROKE_LENGTH);
       }
       else {
-          double rotation_term;
+          mod_phase -= cutoff;
+          Real rotation_term;
           rotation_term = 1.0/(PI*(1.0 - EFFECTIVE_STROKE_LENGTH));
-          double first_term;
+          Real first_term;
           first_term = (1.0 - TRAVELLING_WAVE_IMPORTANCE)*rotation_term;
-          double second_term;
-          double transition_deriv_argument;
-
+          Real second_term;
+          Real transition_deriv_argument;
+          Real c = (FIL_LENGTH + TRAVELLING_WAVE_WINDOW*FIL_LENGTH)/(1.0 - EFFECTIVE_STROKE_LENGTH);
           transition_deriv_argument = (
-            s - (FIL_LENGTH + TRAVELLING_WAVE_WINDOW)*phase / (
-                2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
-            )
-          )/TRAVELLING_WAVE_WINDOW + 0.5;
+            s - c*mod_phase / (2.0*PI)
+          )/(TRAVELLING_WAVE_WINDOW*FIL_LENGTH) + 0.5;
           second_term = TRAVELLING_WAVE_IMPORTANCE*transition_function_derivative(
             transition_deriv_argument
-          )*(FIL_LENGTH + TRAVELLING_WAVE_WINDOW)/ (
+          )*(FIL_LENGTH + TRAVELLING_WAVE_WINDOW*FIL_LENGTH)/ (
                 2.0*PI*(1 - EFFECTIVE_STROKE_LENGTH)
           );
 
@@ -1158,7 +1152,7 @@ void filament::initial_guess(const int nt, const Real *const x_in, const Real *c
       vel_dir_angle[2] = 0.0;
 
       // Apply rotation through shape_rotation_angle about the z-axis in the reference configuration.
-      // const matrix Rshape = (quaternion(std::cos(0.0), 0.0, 0.0, std::sin(0.0))).rot_mat();
+      const matrix Rshape = (quaternion(std::cos(0.0), 0.0, 0.0, std::sin(0.0))).rot_mat();
 
     #endif
 
@@ -1244,7 +1238,7 @@ void filament::initial_guess(const int nt, const Real *const x_in, const Real *c
       #elif BUILD_A_BEAT
 
         // Shape
-        build_a_beat_tangent(t2, Real(n)/Real(NSEG - 1));
+        build_a_beat_tangent(t2, Real(n)/Real(NSEG - 1)*FIL_LENGTH);
 
         #if (DYNAMIC_SHAPE_ROTATION || WRITE_GENERALISED_FORCES)
 
@@ -1263,9 +1257,9 @@ void filament::initial_guess(const int nt, const Real *const x_in, const Real *c
         t1 = t2;
 
         // Velocity direction
-        build_a_beat_tangent_phase_deriv(k2, Real(n)/Real(NSEG - 1));
+        build_a_beat_tangent_phase_deriv(k2, Real(n)/Real(NSEG - 1)*FIL_LENGTH);
 
-        build_a_beat_tangent_angle_deriv(k_angle_2, Real(n)/Real(NSEG - 1));
+        build_a_beat_tangent_angle_deriv(k_angle_2, Real(n)/Real(NSEG - 1)*FIL_LENGTH);
 
         #if (DYNAMIC_SHAPE_ROTATION || WRITE_GENERALISED_FORCES)
 

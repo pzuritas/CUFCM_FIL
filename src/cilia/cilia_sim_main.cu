@@ -52,8 +52,8 @@
 
 int main(int argc, char** argv){
 
-  EFFECTIVE_STROKE_LENGTH = std::stoi(data_from_ini(GLOBAL_FILE_NAME, "Parameters", "f_eff"));
-  THETA_0 = std::stoi(data_from_ini(GLOBAL_FILE_NAME, "Parameters", "theta_0"));
+  EFFECTIVE_STROKE_LENGTH = std::stof(data_from_ini(GLOBAL_FILE_NAME, "Parameters", "f_eff"));
+  THETA_0 = std::stof(data_from_ini(GLOBAL_FILE_NAME, "Parameters", "theta_0"));
 
   // Read global variables from .ini
   NSWIM = std::stoi(data_from_ini(GLOBAL_FILE_NAME, "Parameters", "nswim"));
