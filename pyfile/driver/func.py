@@ -11,7 +11,7 @@ class DRIVER:
 
         self.exe_name = 'cilia_1e-6_sweep'
 
-        self.date = '20240817'
+        self.date = '20240822'
 
         self.dir = f"data/{self.category}{self.date}{self.afix}/"
 
@@ -90,7 +90,7 @@ class DRIVER:
                         force_mag = 1
 
                         nfil = int(256*(i+1))
-                        nblob = int(40962*(i+1))
+                        nblob = int(1024*(i+1))
                         ar = 20
                         period = 1
                         spring_factor = 1e-3 # k_tidle
