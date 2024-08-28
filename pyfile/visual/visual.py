@@ -27,10 +27,9 @@ class VISUAL:
     def __init__(self):
         self.globals_name = 'globals.ini'
 
+        self.date = '20240826'
 
-        self.date = '20240725'
-
-        self.dir = f"data/many-build-a-beat/{self.date}/"
+        self.dir = f"data/synchronised-sweeps/{self.date}/"
 
         # self.date = '20240620'
         # self.dir = f"data/IVP159_flowfield/{self.date}/"
@@ -68,19 +67,22 @@ class VISUAL:
                      "fil_x_dim": [],
                      "blob_x_dim": [],
                      "hex_num": [],
-                     "reverse_fil_direction_ratio": []}
-        self.video = False
-        self.interpolate = False
+                     "reverse_fil_direction_ratio": [],
+                     "f_eff": [],
+                     "theta_0": []
+                     }
+        self.video = True
+        self.interpolate = True
         self.angle = False
         self.output_to_fcm = False
-        self.output_to_superpunto = True
+        self.output_to_superpunto = False
         self.periodic = False
         self.big_sphere = True
         self.show_poles = True
 
         self.noblob = False
 
-        self.planar = True
+        self.planar = False
 
         if(self.planar):
             self.big_sphere = False
@@ -134,13 +136,13 @@ class VISUAL:
     def read_rules(self):
         sim = configparser.ConfigParser()
         try:
-            sim.read(self.dir+"rules.ini")
+            a = sim.read(self.dir+"rules.ini")
+            print(a)
             num_fil = len(np.unique([float(s) for s in sim["Parameter list"]['nfil'].split(', ')]))
             num_ar = len(np.unique([float(s) for s in sim["Parameter list"]['ar'].split(', ')]))
             num_elst = len(np.unique([float(s) for s in sim["Parameter list"]['spring_factor'].split(', ')]))
             num_per_elst = int(num_fil*num_ar)
             select_elst = min(num_elst-1, self.select_elst)
-
             for key, value in self.pars_list.items():
                 if(key in sim["Parameter list"]):
                     self.pars_list[key] = [float(x) for x in sim["Parameter list"][key].split(', ')]
@@ -156,6 +158,8 @@ class VISUAL:
         if(self.index>len(self.pars_list['nfil'])):
             self.index = len(self.pars_list['nfil'])-1
             print(f'Index out of range. Using the last sim: {self.index}')
+        print(self.index)
+        print(self.pars_list['nseg'])
         self.nseg = int(self.pars_list['nseg'][self.index])
         self.nswim = 1
         self.nfil = int(self.pars_list['nfil'][self.index])
@@ -518,8 +522,8 @@ class VISUAL:
             plt.rcParams['animation.ffmpeg_path'] = '/usr/bin/ffmpeg'
             ani = animation.FuncAnimation(fig, animation_func, frames=500, interval=10, repeat=False)
             plt.show()
-            # FFwriter = animation.FFMpegWriter(fps=10)
-            # ani.save(f'fig/ciliate_{nfil}fil_anim.mp4', writer=FFwriter)
+            FFwriter = animation.FFMpegWriter(fps=10)
+            ani.save(f'fig/ciliate_fil_anim.mp4', writer=FFwriter)
         else:
             for i in range(self.plot_end_frame):
                 print(" frame ", i, "/", self.plot_end_frame, "          ", end="\r")
@@ -653,9 +657,9 @@ class VISUAL:
                     frame = i
                     plt.rcParams['animation.ffmpeg_path'] = '/usr/bin/ffmpeg'
                     ani = animation.FuncAnimation(fig, animation_func, frames=self.frames, interval=10, repeat=False)
-                    plt.show()    
-                    # FFwriter = animation.FFMpegWriter(fps=16)
-                    # ani.save(f'fig/fil_phase_index{self.index}_{self.date}_anim.mp4', writer=FFwriter)
+                    # plt.show()    
+                    FFwriter = animation.FFMpegWriter(fps=16)
+                    ani.save(f'fig/fil_phase_index{self.index}_{self.date}_anim.mp4', writer=FFwriter)
                     ## when save, need to comment out plt.show() and be patient!
                     break
                 else:
@@ -821,7 +825,7 @@ class VISUAL:
                     #     fil_angles_str = fil_angles_f.readline()
                     frame += 1
                 
-            # plt.savefig(f'fig/fil_phase_index{self.index}_{self.date}.pdf', bbox_inches = 'tight', format='pdf')
+            plt.savefig(f'fig/fil_phase_index{self.index}_{self.date}.pdf', bbox_inches = 'tight', format='pdf')
             plt.show()
 
     def phi_dot(self):
@@ -1826,6 +1830,7 @@ class VISUAL:
     def ciliate_speed(self):
         self.select_sim()
 
+        print("IN HERE")
         # seg_states_f = open(self.simName + '_seg_states.dat', "r")
         body_states_f = open(self.simName + '_body_states.dat', "r")
         body_vels_f = open(self.simName + '_body_vels.dat', "r")

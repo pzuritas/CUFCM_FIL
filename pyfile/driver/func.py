@@ -7,11 +7,11 @@ class DRIVER:
     def __init__(self):
         self.globals_name = 'input/globals.ini'
         self.afix = ''
-        self.category = 'synchronised-sweeps/'
+        self.category = 'antiplectic-sweeps/'
 
         self.exe_name = 'cilia_1e-6_sweep'
 
-        self.date = '20240822'
+        self.date = '20240827'
 
         self.dir = f"data/{self.category}{self.date}{self.afix}/"
 
@@ -204,7 +204,7 @@ class DRIVER:
 
             command = f"export OPENBLAS_NUM_THREADS=1; \
                         export CUDA_VISIBLE_DEVICES={self.cuda_device}; \
-                        ./bin/{self.exe_name} > temp.out"
+                        nohup ./bin/{self.exe_name} > temp_{self.category[:-1]}.out"
             
             # on ic hpc
             # command = f"export OPENBLAS_NUM_THREADS=1; \
