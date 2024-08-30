@@ -1,17 +1,19 @@
 import configparser
 import os
 import util
+from datetime import datetime
 
 class DRIVER:
 
     def __init__(self):
         self.globals_name = 'input/globals.ini'
         self.afix = ''
-        self.category = 'antiplectic-sweeps/'
+        self.category = 'synchronised-sweeps/'
 
         self.exe_name = 'cilia_1e-6_sweep'
 
-        self.date = '20240827'
+        today = datetime.today()
+        self.date = str(today.strftime("%Y%m%d"))
 
         self.dir = f"data/{self.category}{self.date}{self.afix}/"
 
@@ -192,7 +194,7 @@ class DRIVER:
             
             for key, value in self.pars_list.items():
                 self.write_ini("Parameters", key, float(self.pars_list[key][i]))
-            self.simName = f"ciliate_{self.pars_list['nfil'][i]:.0f}fil_{self.pars_list['nblob'][i]:.0f}blob_{self.pars_list['ar'][i]:.2f}R_{self.pars_list['spring_factor'][i]:.4f}torsion"
+            self.simName = f"ciliate_{self.pars_list['nfil'][i]:.0f}fil_{self.pars_list['nblob'][i]:.0f}blob_{self.pars_list['ar'][i]:.2f}R_{self.pars_list['spring_factor'][i]:.4f}torsion_{self.pars_list['f_eff'][i]:.4f}feff_{self.pars_list['theta_0'][i]:.4f}theta0"
             self.write_ini("Filenames", "simulation_file", self.simName)
             self.write_ini("Filenames", "simulation_dir", self.dir)
             self.write_ini("Filenames", "simulation_icstate_name", f"{self.dir}psi{i}.dat")

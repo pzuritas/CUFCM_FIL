@@ -27,24 +27,9 @@ class VISUAL:
     def __init__(self):
         self.globals_name = 'globals.ini'
 
-        self.date = '20240826'
+        self.date = '20240830'
 
-        self.dir = f"data/synchronised-sweeps/{self.date}/"
-
-        # self.date = '20240620'
-        # self.dir = f"data/IVP159_flowfield/{self.date}/"
-
-        # self.date = '20240311_1'
-        # self.dir = f"data/ic_hpc_sim/{self.date}/"
-
-
-        # self.date = f'index1_alpha0.16326530612244897'
-        # self.dir = f"data/bisection/k0.020/section6/iteration2_1e-7/{self.date}/"
-
-
-
-        # self.date = '20240508'
-        # self.dir = f"data/regular_wall_sim/{self.date}/"
+        self.dir = f"data/dexioplectic-sweeps/{self.date}/"
 
         self.pars_list = {
                      "index": [],
@@ -71,6 +56,7 @@ class VISUAL:
                      "f_eff": [],
                      "theta_0": []
                      }
+        
         self.video = True
         self.interpolate = True
         self.angle = False
@@ -92,7 +78,7 @@ class VISUAL:
 
 
         self.plot_end_frame_setting = 3000
-        self.frames_setting = 61
+        self.frames_setting = 60
 
         self.plot_end_frame = self.plot_end_frame_setting
         self.frames = self.frames_setting
@@ -137,10 +123,11 @@ class VISUAL:
         sim = configparser.ConfigParser()
         try:
             a = sim.read(self.dir+"rules.ini")
-            print(a)
             num_fil = len(np.unique([float(s) for s in sim["Parameter list"]['nfil'].split(', ')]))
             num_ar = len(np.unique([float(s) for s in sim["Parameter list"]['ar'].split(', ')]))
             num_elst = len(np.unique([float(s) for s in sim["Parameter list"]['spring_factor'].split(', ')]))
+            num_f_eff = len(np.unique([float(s) for s in sim["Parameter list"]['f_eff'].split(', ')]))
+            num_theta_0 = len(np.unique([float(s) for s in sim["Parameter list"]['theta_0'].split(', ')]))
             num_per_elst = int(num_fil*num_ar)
             select_elst = min(num_elst-1, self.select_elst)
             for key, value in self.pars_list.items():
@@ -158,8 +145,6 @@ class VISUAL:
         if(self.index>len(self.pars_list['nfil'])):
             self.index = len(self.pars_list['nfil'])-1
             print(f'Index out of range. Using the last sim: {self.index}')
-        print(self.index)
-        print(self.pars_list['nseg'])
         self.nseg = int(self.pars_list['nseg'][self.index])
         self.nswim = 1
         self.nfil = int(self.pars_list['nfil'][self.index])
@@ -167,18 +152,22 @@ class VISUAL:
         self.ar = self.pars_list['ar'][self.index]
         self.spring_factor = self.pars_list['spring_factor'][self.index]
         self.N = int(self.nswim*(self.nfil*self.nseg + self.nblob))
-        self.simName = self.dir + f"ciliate_{self.nfil:.0f}fil_{self.nblob:.0f}blob_{self.ar:.2f}R_{self.spring_factor:.4f}torsion"
+        
         self.fil_spacing = self.pars_list['fil_spacing'][self.index]
         self.fil_x_dim = self.pars_list['fil_x_dim'][self.index]
+        self.f_eff = self.pars_list['f_eff'][self.index]
+        self.theta_0 = self.pars_list['theta_0'][self.index]
+
+        self.simName = self.dir + f"ciliate_{self.nfil:.0f}fil_{self.nblob:.0f}blob_{self.ar:.2f}R_{self.spring_factor:.4f}torsion_{self.f_eff:.4f}f_eff_{self.theta_0:.4f}theta_0"
 
         try:
             open(self.simName + '_fil_references.dat')
         except:
-            self.simName = self.dir + f"ciliate_{self.nfil:.0f}fil_{self.nblob:.0f}blob_{self.ar:.2f}R_{self.spring_factor:.3f}torsion"
+            self.simName = self.dir + f"ciliate_{self.nfil:.0f}fil_{self.nblob:.0f}blob_{self.ar:.2f}R_{self.spring_factor:.3f}torsion_{self.f_eff:.4f}f_eff_{self.theta_0:.4f}theta_0"
         try:
             open(self.simName + '_fil_references.dat')
         except:
-            self.simName = self.dir + f"ciliate_{self.nfil:.0f}fil_{self.nblob:.0f}blob_{self.ar:.2f}R_{self.spring_factor:.2f}torsion"
+            self.simName = self.dir + f"ciliate_{self.nfil:.0f}fil_{self.nblob:.0f}blob_{self.ar:.2f}R_{self.spring_factor:.2f}torsion_{self.f_eff:.4f}f_eff_{self.theta_0:.4f}theta_0"
         
         self.fil_references = myIo.read_fil_references(self.simName + '_fil_references.dat')
         try:
