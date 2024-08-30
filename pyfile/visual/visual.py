@@ -29,7 +29,7 @@ class VISUAL:
 
         self.date = '20240830'
 
-        self.dir = f"data/dexioplectic-sweeps/{self.date}/"
+        self.dir = f"data/symp/{self.date}/"
 
         self.pars_list = {
                      "index": [],
@@ -78,7 +78,7 @@ class VISUAL:
 
 
         self.plot_end_frame_setting = 3000
-        self.frames_setting = 60
+        self.frames_setting = 100
 
         self.plot_end_frame = self.plot_end_frame_setting
         self.frames = self.frames_setting
@@ -158,16 +158,16 @@ class VISUAL:
         self.f_eff = self.pars_list['f_eff'][self.index]
         self.theta_0 = self.pars_list['theta_0'][self.index]
 
-        self.simName = self.dir + f"ciliate_{self.nfil:.0f}fil_{self.nblob:.0f}blob_{self.ar:.2f}R_{self.spring_factor:.4f}torsion_{self.f_eff:.4f}f_eff_{self.theta_0:.4f}theta_0"
+        self.simName = self.dir + f"ciliate_{self.nfil:.0f}fil_{self.nblob:.0f}blob_{self.ar:.2f}R_{self.spring_factor:.4f}torsion_{self.f_eff:.4f}feff_{self.theta_0:.4f}theta0"
 
-        try:
-            open(self.simName + '_fil_references.dat')
-        except:
-            self.simName = self.dir + f"ciliate_{self.nfil:.0f}fil_{self.nblob:.0f}blob_{self.ar:.2f}R_{self.spring_factor:.3f}torsion_{self.f_eff:.4f}f_eff_{self.theta_0:.4f}theta_0"
-        try:
-            open(self.simName + '_fil_references.dat')
-        except:
-            self.simName = self.dir + f"ciliate_{self.nfil:.0f}fil_{self.nblob:.0f}blob_{self.ar:.2f}R_{self.spring_factor:.2f}torsion_{self.f_eff:.4f}f_eff_{self.theta_0:.4f}theta_0"
+        # try:
+        #     open(self.simName + '_fil_references.dat')
+        # except:
+        #     self.simName = self.dir + f"ciliate_{self.nfil:.0f}fil_{self.nblob:.0f}blob_{self.ar:.2f}R_{self.spring_factor:.3f}torsion_{self.f_eff:.4f}f_eff_{self.theta_0:.4f}theta_0"
+        #     try:
+        #         open(self.simName + '_fil_references.dat')
+        #     except:
+        #         self.simName = self.dir + f"ciliate_{self.nfil:.0f}fil_{self.nblob:.0f}blob_{self.ar:.2f}R_{self.spring_factor:.2f}torsion_{self.f_eff:.4f}f_eff_{self.theta_0:.4f}theta_0"
         
         self.fil_references = myIo.read_fil_references(self.simName + '_fil_references.dat')
         try:
